@@ -59,6 +59,8 @@ var player = {
 var bullets = [];
 var enemies = [];
 var explosions = [];
+var megaliths = [];
+var mannadrops = [];
 
 var lastFire = Date.now();
 var gameTime = 0;
