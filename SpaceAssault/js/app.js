@@ -135,7 +135,7 @@ function handleInput(dt) {
 
     if(input.isDown('UP') || input.isDown('w')) {
 
-        if (!(megaliths.some(elem => player.pos[1] <= elem.pos[1]+54 && player.pos[1] >= (elem.pos[1])
+        if (!(megaliths.some(elem => player.pos[1] <= elem.pos[1]+elem.sprite.size[1] && player.pos[1] >= (elem.pos[1])
         && player.pos[0]+player.sprite.size[0] > elem.pos[0] && player.pos[0] < (elem.pos[0]+elem.sprite.size[0]))))
         {
         player.pos[1] -= playerSpeed * dt;
@@ -208,12 +208,12 @@ function updateEntities(dt) {
             i--;
         }
 
-        // if (megaliths.some(elem => bullet.pos[1] > elem.pos[1] && bullet.pos[1] < (elem.pos[1]+54)
-        //     && bullet.pos[0] > elem.pos[0] && bullet.pos[0] < (elem.pos[0]+54)))
-        // {
-        //     bullets.splice(i, 1);
-        //     i--;
-        // }
+        if (megaliths.some(elem => bullet.pos[1] > elem.pos[1] && bullet.pos[1] < (elem.pos[1]+54)
+            && bullet.pos[0] > elem.pos[0] && bullet.pos[0] < (elem.pos[0]+54)))
+        {
+            bullets.splice(i, 1);
+            i--;
+        }
     }
 
     // Update all the enemies
