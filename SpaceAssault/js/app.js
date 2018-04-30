@@ -59,6 +59,8 @@ var player = {
 var bullets = [];
 var enemies = [];
 var explosions = [];
+var mannadrops = [];
+var mannaCount = 0;
 
 var lastFire = Date.now();
 var gameTime = 0;
@@ -89,6 +91,16 @@ function update(dt) {
             sprite: new Sprite('img/sprites.png', [0, 78], [80, 39],
                                6, [0, 1, 2, 3, 2, 1])
         });
+    }
+
+    if(mannaCount<=10) {
+        mannadrops.push({
+            pos: [Math.random() * (canvas.width - 39),
+                  Math.random() * (canvas.height - 39)],
+            sprite: new Sprite('img/sprites.png', [0, 160], [57, 45],
+                               6, [0, 1, 2, 3, 0])
+        });
+        mannaCount++;
     }
 
     checkCollisions();
@@ -167,6 +179,11 @@ function updateEntities(dt) {
             i--;
         }
     }
+
+    for(var i=0; i<mannadrops.length; i++) {
+        mannadrops[i].sprite.update(dt);
+    }
+
 
     // Update all the explosions
     for(var i=0; i<explosions.length; i++) {
@@ -266,6 +283,7 @@ function render() {
     }
 
     renderEntities(bullets);
+    renderEntities(mannadrops);
     renderEntities(enemies);
     renderEntities(explosions);
 };
@@ -297,6 +315,7 @@ function reset() {
     isGameOver = false;
     gameTime = 0;
     score = 0;
+    mannaCount = 0;
 
     enemies = [];
     bullets = [];
