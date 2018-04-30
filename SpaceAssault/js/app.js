@@ -68,7 +68,9 @@ var isGameOver;
 var terrainPattern;
 
 var score = 0;
+var manna = 0;
 var scoreEl = document.getElementById('score');
+var mannaEl = document.getElementById('manna');
 
 // Speed in pixels per second
 var playerSpeed = 200;
@@ -106,6 +108,7 @@ function update(dt) {
     checkCollisions();
 
     scoreEl.innerHTML = score;
+    mannaEl.innerHTML = manna;
 };
 
 function handleInput(dt) {
@@ -259,6 +262,8 @@ function checkCollisions() {
         if(boxCollides(pos4, size4, player.pos, player.sprite.size)) {
             mannadrops.splice(f, 1); 
             mannaCount--;
+            manna+=1;
+            
         
         } 
     }
@@ -326,6 +331,7 @@ function reset() {
     isGameOver = false;
     gameTime = 0;
     score = 0;
+    manna = 0;
     mannaCount = 0;
 
     enemies = [];

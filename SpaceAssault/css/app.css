@@ -27,10 +27,25 @@ canvas {
     color: #757575;
 }
 
-#score {
+#scoretext {
     float: right;
     color: white;
-    font-size: 2em;
+    font-size: 1em;
+}
+
+#mannatext {
+    float: right;
+    clear:both;
+    color: white;
+    font-size: 1em;
+}
+
+#score {
+    float: right;
+}
+
+#manna {
+    float: right;
 }
 
 .key {
