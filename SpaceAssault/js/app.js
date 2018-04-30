@@ -110,10 +110,10 @@ function handleInput(dt) {
 
     if(input.isDown('DOWN') || input.isDown('s')) {     
         
-        if (!(megaliths.some(elem => (player.pos[1]+player.sprite.size[1]) >= (elem.pos[1]-5) && 
+        if (!(megaliths.some(elem => (player.pos[1]+player.sprite.size[1]) >= (elem.pos[1]) && 
             player.pos[1] < (elem.pos[1]+elem.sprite.size[1])
-        && (player.pos[0]+player.sprite.size[0]) > elem.pos[0] && 
-        player.pos[0] < (elem.pos[0]+elem.sprite.size[0]))))
+        && (player.pos[0]+player.sprite.size[0]) > (elem.pos[0]+5) && 
+        player.pos[0] < (elem.pos[0]+elem.sprite.size[0]-5))))
         {
         player.pos[1] += playerSpeed * dt;
         }
@@ -121,10 +121,10 @@ function handleInput(dt) {
 
     if(input.isDown('UP') || input.isDown('w')) {
 
-        if (!(megaliths.some(elem => player.pos[1] <= (elem.pos[1]+elem.sprite.size[1]+5) && 
+        if (!(megaliths.some(elem => player.pos[1] <= (elem.pos[1]+elem.sprite.size[1]) && 
         (player.pos[1]) > (elem.pos[1])
-        && (player.pos[0]+player.sprite.size[0]) > elem.pos[0] && 
-        player.pos[0] < (elem.pos[0]+elem.sprite.size[0]))))
+        && (player.pos[0]+player.sprite.size[0]) > (elem.pos[0]+5) && 
+        player.pos[0] < (elem.pos[0]+elem.sprite.size[0]-5))))
         {
         player.pos[1] -= playerSpeed * dt;
         }
@@ -132,10 +132,10 @@ function handleInput(dt) {
 
     if(input.isDown('LEFT') || input.isDown('a')) {
 
-        if (!(megaliths.some(elem => player.pos[0] <= (elem.pos[0]+elem.sprite.size[0]+5) && 
+        if (!(megaliths.some(elem => player.pos[0] <= (elem.pos[0]+elem.sprite.size[0]) && 
         (player.pos[0]) > (elem.pos[0])
-        && (player.pos[1]+player.sprite.size[1]) > elem.pos[1] && 
-        player.pos[1] < (elem.pos[1]+elem.sprite.size[1]))))
+        && (player.pos[1]+player.sprite.size[1]) > (elem.pos[1]+5) && 
+        player.pos[1] < (elem.pos[1]+elem.sprite.size[1]-5))))
         {
         player.pos[0] -= playerSpeed * dt;
         }
@@ -143,8 +143,10 @@ function handleInput(dt) {
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
 
-        if (!(megaliths.some(elem => (player.pos[0]+player.sprite.size[0]) >= (elem.pos[0]-5) && player.pos[0] < (elem.pos[0]+elem.sprite.size[0])
-        && (player.pos[1]+player.sprite.size[1]) > (elem.pos[1]) && player.pos[1] < (elem.pos[1]+elem.sprite.size[1]))))
+        if (!(megaliths.some(elem => (player.pos[0]+player.sprite.size[0]) >= (elem.pos[0]) && 
+        player.pos[0] < (elem.pos[0]+elem.sprite.size[0])
+        && (player.pos[1]+player.sprite.size[1]) > (elem.pos[1]+5) && 
+        player.pos[1] < (elem.pos[1]+elem.sprite.size[1]-5))))
         {
         player.pos[0] += playerSpeed * dt;
         }
