@@ -253,6 +253,17 @@ function checkCollisions() {
             gameOver();
         }
     }
+    for(var f=0; f<mannadrops.length; f++) {
+        var pos4 = mannadrops[f].pos;
+        var size4 = mannadrops[f].sprite.size;
+        if(boxCollides(pos4, size4, player.pos, player.sprite.size)) {
+            mannadrops.splice(f, 1); 
+            mannaCount--;
+        
+        } 
+    }
+
+    
 }
 
 function checkPlayerBounds() {
