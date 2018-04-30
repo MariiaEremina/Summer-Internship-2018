@@ -383,6 +383,13 @@ function reset() {
 
     for(var i=0; i<megaliths.length; i++) {
     megaliths[i].pos = [(Math.random() * (canvas.width - 39)), (Math.random() * (canvas.height - 54))];
+
+    if ((megaliths[i].pos[0]+megaliths[i].sprite.size[0]) >=50 && (megaliths[i].pos[0]<=50+player.sprite.size[0])
+    && (megaliths[i].pos[1]+megaliths[i].sprite.size[1]) >=(canvas.height / 2) && megaliths[i].pos[1]<=((canvas.height / 2)+player.sprite.size[0]))
+    {
+    megaliths.splice(i, 1);
+            i--;
+    }
     };
 
     
