@@ -36,7 +36,12 @@ namespace Logic
             Enemy enemy3 = new Enemy(width - objSize - 10, 10, objSize);
             enemies.Add(enemy3);
 
-            for (int i = 0; i < 10; i++)
+            MakePrizes(prizeCount);
+
+        }
+        public void MakePrizes(int count)
+        {
+            for (int i = count; i < 10; i++)
             {
                 int x = positionRand.Next(width - objSize);
                 int y = positionRand.Next(height - objSize);
@@ -51,8 +56,6 @@ namespace Logic
                     i--;
                 }
             }
-
-
         }
 
         public bool CheckEmpty(int x, int y)
@@ -370,6 +373,8 @@ namespace Logic
                 bullet.Move();
                 bullet.Move();
             }
+
+            MakePrizes(prizeCount);
         }
 
         public void Shoot(Tank tank, directions direction)
