@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static ClassLibrary.Movable;
 
 namespace TanksWF
 {
@@ -18,7 +19,7 @@ namespace TanksWF
         public Bitmap background = new Bitmap(600, 600);
         public List<Bitmap> playerImages = new List<Bitmap>();
         public List<Bitmap> enemyImages = new List<Bitmap>();
-        int playerDirectionNumber = 0;
+        directions playerDirectionNumber = directions.up;
         Model model = new Model();
         public View()
         {
@@ -38,14 +39,14 @@ namespace TanksWF
             Render();
         }
 
-        
+
 
         private void Render()
         {
             Bitmap screen = new Bitmap(600, 600);
             using (Graphics g = Graphics.FromImage(screen))
             {
-                g.Clear (Color.Transparent);
+                g.Clear(Color.Transparent);
             }
 
             MakePlayerImages();
@@ -56,8 +57,9 @@ namespace TanksWF
                 RenderPlayer(screen);
                 RenderPrize(screen);
                 RenderEnemy(screen);
+                RenderBullet(screen);
             }
-            
+
 
             using (Graphics g = Graphics.FromImage(background))
             {
@@ -75,22 +77,23 @@ namespace TanksWF
                 {
                     case ClassLibrary.Movable.directions.up:
                         g.DrawImage(playerImages[0], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
-                        playerDirectionNumber = 0;
+                        playerDirectionNumber = directions.up;
                         break;
                     case ClassLibrary.Movable.directions.down:
-                        g.DrawImage(playerImages[2], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
-                        playerDirectionNumber = 2;
+                        g.DrawImage(playerImages[1], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        playerDirectionNumber = directions.down;
                         break;
                     case ClassLibrary.Movable.directions.left:
-                        g.DrawImage(playerImages[1], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
-                        playerDirectionNumber = 1;
+                        g.DrawImage(playerImages[2], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        playerDirectionNumber = directions.left;
                         break;
                     case ClassLibrary.Movable.directions.right:
                         g.DrawImage(playerImages[3], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
-                        playerDirectionNumber = 3;
+                        playerDirectionNumber = directions.right;
                         break;
                     case ClassLibrary.Movable.directions.none:
-                        g.DrawImage(playerImages[playerDirectionNumber], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        int i = (int)playerDirectionNumber;
+                        g.DrawImage(playerImages[i], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
                         break;
                     default:
                         break;
@@ -141,14 +144,26 @@ namespace TanksWF
             }
         }
 
-        public void MakePlayerImages ()
+        public void RenderBullet(Bitmap screen)
         {
-            Bitmap up = new Bitmap(sprite.Clone(new Rectangle(0, 0, 15, 16), sprite.PixelFormat));
+            Bitmap bullet = new Bitmap(sprite.Clone(new Rectangle(390, 0, 5, 5), sprite.PixelFormat));
+            for (int i = 0; i < model.bullets.Count; i++)
+            {
+                using (Graphics g = Graphics.FromImage(screen))
+                {
+                    g.DrawImage(bullet, new Rectangle(model.bullets[i].position_x, model.bullets[i].position_y, 5, 5));
+                }
+            }
+        }
+
+        public void MakePlayerImages()
+        {
+            Bitmap up = new Bitmap(sprite.Clone(new Rectangle(0, 0, 14, 16), sprite.PixelFormat));
             playerImages.Add(up);
-            Bitmap left = new Bitmap(sprite.Clone(new Rectangle(33, 0, 15, 16), sprite.PixelFormat));
-            playerImages.Add(left);
-            Bitmap down = new Bitmap(sprite.Clone(new Rectangle(64, 0, 15, 15), sprite.PixelFormat));
+            Bitmap down = new Bitmap(sprite.Clone(new Rectangle(64, 0, 14, 16), sprite.PixelFormat));
             playerImages.Add(down);
+            Bitmap left = new Bitmap(sprite.Clone(new Rectangle(33, 0, 15, 15), sprite.PixelFormat));
+            playerImages.Add(left);
             Bitmap right = new Bitmap(sprite.Clone(new Rectangle(96, 0, 15, 15), sprite.PixelFormat));
             playerImages.Add(right);
         }
@@ -165,8 +180,7 @@ namespace TanksWF
             enemyImages.Add(right);
         }
 
-        
-            private void View_KeyDown(object sender, KeyEventArgs e)
+        private void View_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyData)
             {
@@ -181,6 +195,9 @@ namespace TanksWF
                     break;
                 case Keys.Right:
                     model.player.direction = ClassLibrary.Movable.directions.right;
+                    break;
+                case Keys.Space:
+                    model.Shoot(model.player, playerDirectionNumber);
                     break;
             }
         }
@@ -213,6 +230,7 @@ namespace TanksWF
                         model.player.direction = ClassLibrary.Movable.directions.none;
                     }
                     break;
+
             }
         }
     }

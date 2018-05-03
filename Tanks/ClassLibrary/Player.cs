@@ -8,11 +8,13 @@ namespace ClassLibrary
 {
     public class Player : Tank
     {
-        public Player (int x, int y)
+        public Player (int x, int y, int size)
         {
 
             position_x = x;
             position_y = y;
+            size_x = size;
+            size_y = size;
             
             direction = directions.up;
         }

@@ -19,7 +19,7 @@ namespace Logic
         public List<Prize> prizes = new List<Prize>();
         int prizeCount = 0;
         List<Let> lets = new List<Let>();
-        List<Bullet> bullets = new List<Bullet>();
+        public List<Bullet> bullets = new List<Bullet>();
         public int objSize = 40;
 
         DateTime lastFire = DateTime.Now;
@@ -28,12 +28,12 @@ namespace Logic
 
         public Model()
         {
-            player = new Player((width - objSize) / 2, height - objSize);
-            Enemy enemy1 = new Enemy(10, 10);
+            player = new Player((width - objSize) / 2, height - objSize, objSize);
+            Enemy enemy1 = new Enemy(10, 10, objSize);
             enemies.Add(enemy1);
-            Enemy enemy2 = new Enemy((width - objSize) / 2, 10);
+            Enemy enemy2 = new Enemy((width - objSize) / 2, 10, objSize);
             enemies.Add(enemy2);
-            Enemy enemy3 = new Enemy(width - objSize - 10, 10);
+            Enemy enemy3 = new Enemy(width - objSize - 10, 10, objSize);
             enemies.Add(enemy3);
 
             for (int i = 0; i < 10; i++)
@@ -120,14 +120,16 @@ namespace Logic
 
                 }
 
+                CheckEnemyBounds(enemies[i]);
+
+                if (BoxCollides(player.position_x, player.position_y, objSize, enemies[i].position_x, enemies[i].position_y, objSize))
+                {
+                    GameOver();
+                }
 
                 for (int j = 0; j < bullets.Count; j++)
                 {
-                    if (CheckBulletBounds(bullets[j]))
-                    {
-                        j--;
-                        break;
-                    }
+                    
 
                     if (BoxCollides(enemies[i].position_x, enemies[i].position_y, objSize, bullets[j].position_x, bullets[j].position_y, 5))
                     {
@@ -139,12 +141,13 @@ namespace Logic
                             score += 100;
                             bullets.Remove(bullets[j]);
                             j--;
+                            
                             break;
                         }
                     }
                 }
 
-                CheckEnemyBounds(enemies[i]);
+                
 
                 // Walls
 
@@ -179,9 +182,29 @@ namespace Logic
 
 
 
-                if (BoxCollides(player.position_x, player.position_y, objSize, enemies[i].position_x, enemies[i].position_y, objSize))
+                
+            }
+
+            if (enemies.Count == 0)
+            {
+                GameOver();
+            }
+
+            for (int b = 0; b < bullets.Count; b++)
+            {
+                if (CheckBulletBounds(bullets[b]))
                 {
-                    GameOver();
+                    b--;
+                    break;
+                }
+
+                if (BoxCollides(player.position_x, player.position_y, objSize, bullets[b].position_x, bullets[b].position_y, 5))
+                {
+                    if (!(bullets[b].myOwner is Player))
+                    {
+                        GameOver();
+                        break;
+                    }
                 }
             }
 
@@ -314,10 +337,12 @@ namespace Logic
                 player.Move();
             foreach (Enemy enemy in enemies)
             {
+                
                 if (enemy.time == 40)
                 {
                     enemy.time = 0;
-                    
+                    Shoot(enemy, enemy.direction);
+
                     int probability = positionRand.Next(10);
                     switch (probability)
                     {
@@ -345,6 +370,12 @@ namespace Logic
                 bullet.Move();
                 bullet.Move();
             }
+        }
+
+        public void Shoot(Tank tank, directions direction)
+        {
+            Bullet bullet = new Bullet(tank, direction);
+            bullets.Add(bullet);
         }
     }
 }
