@@ -19,8 +19,11 @@ namespace TanksWF
         public Bitmap background = new Bitmap(600, 600);
         public List<Bitmap> playerImages = new List<Bitmap>();
         public List<Bitmap> enemyImages = new List<Bitmap>();
+        public List<Bitmap> explosionImages = new List<Bitmap>();
         directions playerDirectionNumber = directions.up;
         Model model = new Model();
+        bool pause = true;
+
         public View()
         {
             InitializeComponent();
@@ -28,9 +31,8 @@ namespace TanksWF
 
         private void View_Load(object sender, EventArgs e)
         {
-            Render();
             model.player.direction = ClassLibrary.Movable.directions.none;
-            timer.Start();
+            Render();
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -38,8 +40,6 @@ namespace TanksWF
             model.Update();
             Render();
         }
-
-
 
         private void Render()
         {
@@ -51,6 +51,7 @@ namespace TanksWF
 
             MakePlayerImages();
             MakeEnemyImages();
+            MakeExplosionImages();
 
             if (!model.isGameOver)
             {
@@ -58,6 +59,7 @@ namespace TanksWF
                 RenderPrize(screen);
                 RenderEnemy(screen);
                 RenderBullet(screen);
+                RenderExplosion(screen);
             }
 
 
@@ -67,6 +69,8 @@ namespace TanksWF
                 g.DrawImage(screen, 0, 0, 600, 600);
             }
             pictureBox1.Image = background;
+
+            Score.Text = "Score:" + model.score.ToString();
         }
 
         public void RenderPlayer(Bitmap screen)
@@ -156,6 +160,50 @@ namespace TanksWF
             }
         }
 
+        public void RenderExplosion(Bitmap screen)
+        {
+            using (Graphics g = Graphics.FromImage(screen))
+            {
+                for (int i = 0; i < model.explosions.Count; i++)
+                {
+                    switch (Math.Round((double)(model.explosions[i].explocionCount/10)))
+                    {
+                        case 1:
+                            g.DrawImage(explosionImages[0], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            break;
+                        case 2:
+                            g.DrawImage(explosionImages[1], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            break;
+                        case 3:
+                            g.DrawImage(explosionImages[2], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            break;
+                        case 4:
+                            g.DrawImage(explosionImages[3], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            break;
+                        case 5:
+                            g.DrawImage(explosionImages[4], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        public void MakeExplosionImages()
+        {
+            Bitmap first = new Bitmap(sprite.Clone(new Rectangle(259, 130, 12, 11), sprite.PixelFormat));
+            explosionImages.Add(first);
+            Bitmap second = new Bitmap(sprite.Clone(new Rectangle(272, 129, 15, 14), sprite.PixelFormat));
+            explosionImages.Add(second);
+            Bitmap third = new Bitmap(sprite.Clone(new Rectangle(288, 128, 16, 17), sprite.PixelFormat));
+            explosionImages.Add(third);
+            Bitmap fourth = new Bitmap(sprite.Clone(new Rectangle(305, 129, 31, 30), sprite.PixelFormat));
+            explosionImages.Add(fourth);
+            Bitmap fifth = new Bitmap(sprite.Clone(new Rectangle(335, 129, 33, 33), sprite.PixelFormat));
+            explosionImages.Add(fifth);
+        }
+
         public void MakePlayerImages()
         {
             Bitmap up = new Bitmap(sprite.Clone(new Rectangle(0, 0, 14, 16), sprite.PixelFormat));
@@ -184,16 +232,16 @@ namespace TanksWF
         {
             switch (e.KeyData)
             {
-                case Keys.Down:
+                case Keys.S:
                     model.player.direction = ClassLibrary.Movable.directions.down;
                     break;
-                case Keys.Up:
+                case Keys.W:
                     model.player.direction = ClassLibrary.Movable.directions.up;
                     break;
-                case Keys.Left:
+                case Keys.A:
                     model.player.direction = ClassLibrary.Movable.directions.left;
                     break;
-                case Keys.Right:
+                case Keys.D:
                     model.player.direction = ClassLibrary.Movable.directions.right;
                     break;
                 case Keys.Space:
@@ -206,25 +254,25 @@ namespace TanksWF
         {
             switch (e.KeyData)
             {
-                case Keys.Down:
+                case Keys.S:
                     if (model.player.direction == ClassLibrary.Movable.directions.down)
                     {
                         model.player.direction = ClassLibrary.Movable.directions.none;
                     }
                     break;
-                case Keys.Up:
+                case Keys.W:
                     if (model.player.direction == ClassLibrary.Movable.directions.up)
                     {
                         model.player.direction = ClassLibrary.Movable.directions.none;
                     }
                     break;
-                case Keys.Left:
+                case Keys.A:
                     if (model.player.direction == ClassLibrary.Movable.directions.left)
                     {
                         model.player.direction = ClassLibrary.Movable.directions.none;
                     }
                     break;
-                case Keys.Right:
+                case Keys.D:
                     if (model.player.direction == ClassLibrary.Movable.directions.right)
                     {
                         model.player.direction = ClassLibrary.Movable.directions.none;
@@ -232,6 +280,34 @@ namespace TanksWF
                     break;
 
             }
+        }
+
+        private void Start_Click(object sender, EventArgs e)
+        {
+            Start.Focus();
+            Start.Select();
+            model = new Model();
+            model.player.direction = ClassLibrary.Movable.directions.none;
+            timer.Start();
+            pictureBox1.Focus();
+        }
+
+        private void Pause_Click(object sender, EventArgs e)
+        {
+            Pause.Focus();
+            Pause.Select();
+
+            if (pause)
+            {
+                timer.Stop();
+                pause = false;
+            }
+            else
+            {
+                timer.Start();
+                pause = true;
+            }
+            pictureBox1.Focus();
         }
     }
 }

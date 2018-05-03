@@ -16,6 +16,7 @@ namespace Logic
         int height = 600;
         public Player player;
         public List<Enemy> enemies = new List<Enemy>();
+        public List<Explosion> explosions = new List<Explosion>();
         public List<Prize> prizes = new List<Prize>();
         int prizeCount = 0;
         List<Let> lets = new List<Let>();
@@ -24,7 +25,7 @@ namespace Logic
 
         DateTime lastFire = DateTime.Now;
         public bool isGameOver = false;
-        int score = 0;
+        public int score = 0;
 
         public Model()
         {
@@ -138,8 +139,10 @@ namespace Logic
                     {
                         if (bullets[j].myOwner is Player)
                         {
-                            enemies.Remove(enemies[i]);
+                            Explosion explosion = new Explosion(enemies[i]);
+                            explosions.Add(explosion);
 
+                            enemies.Remove(enemies[i]);
                             i--;
                             score += 100;
                             bullets.Remove(bullets[j]);
@@ -372,6 +375,35 @@ namespace Logic
             {
                 bullet.Move();
                 bullet.Move();
+            }
+
+            for (int e = 0; e < explosions.Count; e++)
+            {
+                if (explosions[e].explocionCount < 60)
+                {
+                    explosions[e].explocionCount++;
+                    if (explosions[e].explocionCount % 10 == 0)
+                    {
+                        if (explosions[e].explocionCount != 40)
+                        {
+                            explosions[e].position_x -= 3;
+                            explosions[e].position_y -= 3;
+                            explosions[e].size += 3;
+                        }
+                        else
+                        {
+                            explosions[e].position_x -= 10;
+                            explosions[e].position_y -= 10;
+                            explosions[e].size += 10;
+                        }
+                    }
+                }
+                
+                else
+                {
+                    explosions.Remove(explosions[e]);
+                    e--;
+                }
             }
 
             MakePrizes(prizeCount);
