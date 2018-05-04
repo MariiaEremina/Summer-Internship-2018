@@ -25,6 +25,7 @@ namespace Logic
 
         DateTime lastFire = DateTime.Now;
         public bool isGameOver = false;
+        public bool youWin = false;
         public int score = 0;
 
         public Model()
@@ -121,12 +122,22 @@ namespace Logic
                 }
             }
 
+            foreach (Let let in lets)
+            {
+                if (BoxCollides(x, y, objSize, let.position_x, let.position_y, objSize/2))
+                {
+                    empty = false;
+                    break;
+                }
+            }
+
             return empty;
         }
 
         public void CheckCollisions()
         {
             CheckPlayerBounds();
+            CheckPlayerCrash();
 
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -136,19 +147,52 @@ namespace Logic
                     {
                         if (BoxCollides(enemies[i].position_x, enemies[i].position_y, objSize, enemy.position_x, enemy.position_y, objSize))
                         {
+                            int r = positionRand.Next(2);
                             switch (enemies[i].direction)
                             {
                                 case directions.right:
-                                    enemies[i].direction = directions.up;
+                                    
+                                    if (r == 0)
+                                    {
+                                        enemy.direction = Movable.directions.up;
+                                    }
+                                    else
+                                    {
+                                        enemy.direction = Movable.directions.down;
+                                    }
                                     break;
                                 case directions.left:
-                                    enemies[i].direction = directions.down;
+                                    
+                                    if (r == 0)
+                                    {
+                                        enemy.direction = Movable.directions.up;
+                                    }
+                                    else
+                                    {
+                                        enemy.direction = Movable.directions.down;
+                                    }
                                     break;
                                 case directions.up:
-                                    enemies[i].direction = directions.left;
+                                    
+                                    if (r == 0)
+                                    {
+                                        enemy.direction = Movable.directions.left;
+                                    }
+                                    else
+                                    {
+                                        enemy.direction = Movable.directions.right;
+                                    }
                                     break;
                                 case directions.down:
-                                    enemies[i].direction = directions.right;
+                                   
+                                    if (r == 0)
+                                    {
+                                        enemy.direction = Movable.directions.left;
+                                    }
+                                    else
+                                    {
+                                        enemy.direction = Movable.directions.right;
+                                    }
                                     break;
                                 default:
                                     break;
@@ -187,43 +231,28 @@ namespace Logic
                         }
                     }
                 }
-
-                
-
-                // Walls
-
-                //foreach (Let let in lets)
-                //    {
-                //    if(BoxCollides(pos, size, pos3, size3))
-                //    {
-                //        if (i%2) 
-                //        {   
-                //            pos[1] = pos[1]+40; 
-                //        }
-                //        else
-                //        {
-                //            pos[1] = pos[1]-40; 
-                //        }
-                //    }
-
-                //}
-
-
-                //    // Add an explosion
-                //    explosions.push({
-                //    pos: pos,
-                //sprite: new Sprite('img/sprites.png',
-                //                   [0, 117],
-                //                   [39, 39],
-                //                   16,
-                //                   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                //                   null,
-                //                   true)
-                //    });
-
-
-
-                
+                for (int l = 0; l < lets.Count; l++)
+                {
+                    if (BoxCollides(enemies[i].position_x+2, enemies[i].position_y+2, objSize-3, lets[l].position_x, lets[l].position_y, objSize/2))
+                    {
+                        switch (enemies[i].direction)
+                        {
+                            case directions.right:
+                                enemies[i].direction = directions.left;
+                                break;
+                            case directions.left:
+                                enemies[i].direction = directions.right;
+                                break;
+                            case directions.up:
+                                enemies[i].direction = directions.down;
+                                break;
+                            case directions.down:
+                                enemies[i].direction = directions.up;
+                                break;
+                        }
+                        break;
+                    }
+                }
             }
 
             if (enemies.Count == 0)
@@ -246,6 +275,34 @@ namespace Logic
                         GameOver();
                         break;
                     }
+                }
+
+                bool crash = false;
+                for (int l = 0; l < lets.Count; l++)
+                {
+                    if (BoxCollides(bullets[b].position_x, bullets[b].position_y, 5, lets[l].position_x, lets[l].position_y, objSize / 2))
+                    {
+                        if (lets[l].type != 2)
+                        {
+                            if (lets[l].type ==0)
+                            {
+                                crash = true;
+                                lets.Remove(lets[l]);
+                                l--;
+                                break;
+                            }
+                            crash = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (crash)
+                {
+
+                    bullets.Remove(bullets[b]);
+                    b--;
+                    break;
                 }
             }
 
@@ -302,6 +359,33 @@ namespace Logic
             else if (player.position_y > height - objSize)
             {
                 player.position_y = height - objSize;
+            }
+        }
+
+        void CheckPlayerCrash()
+        {
+            for (int l = 0; l < lets.Count; l++)
+            {
+                if (BoxCollides(player.position_x+2, player.position_y+2, objSize-3, lets[l].position_x, lets[l].position_y, objSize / 2))
+                {
+                    switch (player.direction)
+                    {
+                        case directions.right:
+                            player.position_x -= 2;
+                            break;
+                        case directions.left:
+                            player.position_x += 2;
+                            break;
+                        case directions.up:
+                            player.position_y += 2;
+                            break;
+                        case directions.down:
+                            player.position_y -= 2;
+                            break;
+                    }
+                    player.direction = directions.none;
+                    break;
+                }
             }
         }
 

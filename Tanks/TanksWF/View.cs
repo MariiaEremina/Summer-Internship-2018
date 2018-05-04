@@ -36,7 +36,7 @@ namespace TanksWF
             MakeEnemyImages();
             MakeExplosionImages();
             MakeLetImages();
-            model.player.direction = ClassLibrary.Movable.directions.none;
+            model.player.direction = directions.none;
             Render();
         }
 
@@ -65,6 +65,13 @@ namespace TanksWF
                 RenderExplosion(screen);
                 RenderLets(screen);
             }
+            else
+            {
+                if(model.youWin)
+                { }
+                else
+                { }
+            }
 
 
             using (Graphics g = Graphics.FromImage(background))
@@ -83,23 +90,23 @@ namespace TanksWF
             {
                 switch (model.player.direction)
                 {
-                    case ClassLibrary.Movable.directions.up:
+                    case directions.up:
                         g.DrawImage(playerImages[0], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
                         playerDirectionNumber = directions.up;
                         break;
-                    case ClassLibrary.Movable.directions.down:
+                    case directions.down:
                         g.DrawImage(playerImages[1], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
                         playerDirectionNumber = directions.down;
                         break;
-                    case ClassLibrary.Movable.directions.left:
+                    case directions.left:
                         g.DrawImage(playerImages[2], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
                         playerDirectionNumber = directions.left;
                         break;
-                    case ClassLibrary.Movable.directions.right:
+                    case directions.right:
                         g.DrawImage(playerImages[3], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
                         playerDirectionNumber = directions.right;
                         break;
-                    case ClassLibrary.Movable.directions.none:
+                    case directions.none:
                         int i = (int)playerDirectionNumber;
                         g.DrawImage(playerImages[i], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
                         break;
@@ -119,16 +126,16 @@ namespace TanksWF
                 {
                     switch (model.enemies[i].direction)
                     {
-                        case ClassLibrary.Movable.directions.up:
+                        case directions.up:
                             g.DrawImage(enemyImages[0], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
                             break;
-                        case ClassLibrary.Movable.directions.down:
+                        case directions.down:
                             g.DrawImage(enemyImages[2], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
                             break;
-                        case ClassLibrary.Movable.directions.left:
+                        case directions.left:
                             g.DrawImage(enemyImages[1], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
                             break;
-                        case ClassLibrary.Movable.directions.right:
+                        case directions.right:
                             g.DrawImage(enemyImages[3], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
                             break;
                         default:
@@ -259,16 +266,16 @@ namespace TanksWF
             switch (e.KeyData)
             {
                 case Keys.S:
-                    model.player.direction = ClassLibrary.Movable.directions.down;
+                    model.player.direction = directions.down;
                     break;
                 case Keys.W:
-                    model.player.direction = ClassLibrary.Movable.directions.up;
+                    model.player.direction = directions.up;
                     break;
                 case Keys.A:
-                    model.player.direction = ClassLibrary.Movable.directions.left;
+                    model.player.direction = directions.left;
                     break;
                 case Keys.D:
-                    model.player.direction = ClassLibrary.Movable.directions.right;
+                    model.player.direction = directions.right;
                     break;
                 case Keys.Space:
                     model.Shoot(model.player, playerDirectionNumber);
@@ -281,27 +288,27 @@ namespace TanksWF
             switch (e.KeyData)
             {
                 case Keys.S:
-                    if (model.player.direction == ClassLibrary.Movable.directions.down)
+                    if (model.player.direction == directions.down)
                     {
-                        model.player.direction = ClassLibrary.Movable.directions.none;
+                        model.player.direction = directions.none;
                     }
                     break;
                 case Keys.W:
-                    if (model.player.direction == ClassLibrary.Movable.directions.up)
+                    if (model.player.direction == directions.up)
                     {
-                        model.player.direction = ClassLibrary.Movable.directions.none;
+                        model.player.direction = directions.none;
                     }
                     break;
                 case Keys.A:
-                    if (model.player.direction == ClassLibrary.Movable.directions.left)
+                    if (model.player.direction == directions.left)
                     {
-                        model.player.direction = ClassLibrary.Movable.directions.none;
+                        model.player.direction = directions.none;
                     }
                     break;
                 case Keys.D:
-                    if (model.player.direction == ClassLibrary.Movable.directions.right)
+                    if (model.player.direction == directions.right)
                     {
-                        model.player.direction = ClassLibrary.Movable.directions.none;
+                        model.player.direction = directions.none;
                     }
                     break;
 
@@ -313,7 +320,7 @@ namespace TanksWF
             Start.Focus();
             Start.Select();
             model = new Model();
-            model.player.direction = ClassLibrary.Movable.directions.none;
+            model.player.direction = directions.none;
             timer.Start();
             pictureBox1.Focus();
         }
