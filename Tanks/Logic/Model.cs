@@ -12,21 +12,90 @@ namespace Logic
     {
 
         static Random positionRand = new Random();
-        int width = 600;
-        int height = 600;
-        public Player player;
-        public List<Enemy> enemies = new List<Enemy>();
-        public List<Explosion> explosions = new List<Explosion>();
-        public List<Prize> prizes = new List<Prize>();
-        int prizeCount = 0;
-        public List<Let> lets = new List<Let>();
-        public List<Bullet> bullets = new List<Bullet>();
-        public int objSize = 40;
+        private int width = 600;
+        private int height = 600;
+        private int prizeCount = 0;
+        private Player player;
+        private List<Enemy> enemies = new List<Enemy>();
+        private List<Explosion> explosions = new List<Explosion>();
+        private List<Prize> prizes = new List<Prize>();
+        private List<Let> lets = new List<Let>();
+        private List<Bullet> bullets = new List<Bullet>();
+        private int objSize = 40;
+        private bool isGameOver = false;
+        private bool youWin = false;
+        private int score = 0;
 
-        DateTime lastFire = DateTime.Now;
-        public bool isGameOver = false;
-        public bool youWin = false;
-        public int score = 0;
+        public Player Player
+        {
+            get
+            {
+                return player;
+            }
+        }
+        public List<Enemy> Enemies
+        {
+            get
+            {
+                return enemies;
+            }
+        }
+        public List<Explosion> Explosions
+        {
+            get
+            {
+            return explosions;
+            }
+}
+        public List<Prize> Prizes
+        {
+            get
+            {
+                return prizes;
+            }
+        }
+        public List<Let> Lets
+        {
+            get
+            {
+                return lets;
+            }
+        }
+        public List<Bullet> Bullets
+        {
+            get
+            {
+                return bullets;
+            }
+        }
+        public int ObjSize
+        {
+            get
+            {
+                return objSize;
+            }
+        }
+        public bool IsGameOver
+        {
+            get
+            {
+                return isGameOver;
+            }
+        }
+        public bool YouWin
+        {
+            get
+            {
+                return youWin;
+            }
+        }
+        public int Score
+        {
+            get
+            {
+                return score;
+            }
+        }
 
         public Model()
         {
@@ -37,11 +106,10 @@ namespace Logic
             enemies.Add(enemy2);
             Enemy enemy3 = new Enemy(width - objSize - 10, 10, objSize);
             enemies.Add(enemy3);
-
-            MakePrizes(prizeCount);
             MakeLets();
-
+            MakePrizes(prizeCount);
         }
+
         void MakePrizes(int count)
         {
             for (int i = count; i < 10; i++)
@@ -77,7 +145,7 @@ namespace Logic
 
             file.Close();
 
-            for (int i = 0; i<30; i++)
+            for (int i = 0; i < 30; i++)
             {
                 char[] tempArr = lines[i].ToCharArray();
 
@@ -92,6 +160,79 @@ namespace Logic
                 }
                 p_y += 20;
                 p_x = 0;
+            }
+        }
+
+        void MakeExplosions()
+        {
+            for (int e = 0; e < explosions.Count; e++)
+            {
+                if (explosions[e].explocionCount < 60)
+                {
+                    explosions[e].explocionCount++;
+                    if (explosions[e].explocionCount % 10 == 0)
+                    {
+                        if (explosions[e].explocionCount != 40)
+                        {
+                            explosions[e].position_x -= 3;
+                            explosions[e].position_y -= 3;
+                            explosions[e].size += 3;
+                        }
+                        else
+                        {
+                            explosions[e].position_x -= 10;
+                            explosions[e].position_y -= 10;
+                            explosions[e].size += 10;
+                        }
+                    }
+                }
+
+                else
+                {
+                    explosions.Remove(explosions[e]);
+                    e--;
+                }
+            }
+        }
+
+        void MoveAfterCheck()
+        {
+            if (player.direction != Movable.directions.none)
+                player.Move();
+            foreach (Enemy enemy in enemies)
+            {
+
+                if (enemy.time == 40)
+                {
+                    enemy.time = 0;
+                    Shoot(enemy, enemy.direction);
+
+                    int probability = positionRand.Next(10);
+                    switch (probability)
+                    {
+                        case 1:
+                            enemy.direction = directions.up;
+                            break;
+                        case 2:
+                            enemy.direction = directions.down;
+                            break;
+                        case 3:
+                            enemy.direction = directions.left;
+                            break;
+                        case 4:
+                            enemy.direction = directions.right;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                enemy.Move();
+                enemy.time++;
+            }
+            foreach (Bullet bullet in bullets)
+            {
+                bullet.Move();
+                bullet.Move();
             }
         }
 
@@ -124,7 +265,7 @@ namespace Logic
 
             foreach (Let let in lets)
             {
-                if (BoxCollides(x, y, objSize, let.position_x, let.position_y, objSize/2))
+                if (BoxCollides(x, y, objSize, let.position_x, let.position_y, objSize / 2))
                 {
                     empty = false;
                     break;
@@ -138,184 +279,17 @@ namespace Logic
         {
             CheckPlayerBounds();
             CheckPlayerCrash();
-
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                foreach (Enemy enemy in enemies)
-                {
-                    if (!(enemies[i] == enemy))
-                    {
-                        if (BoxCollides(enemies[i].position_x, enemies[i].position_y, objSize, enemy.position_x, enemy.position_y, objSize))
-                        {
-                            int r = positionRand.Next(2);
-                            switch (enemies[i].direction)
-                            {
-                                case directions.right:
-                                    
-                                    if (r == 0)
-                                    {
-                                        enemy.direction = Movable.directions.up;
-                                    }
-                                    else
-                                    {
-                                        enemy.direction = Movable.directions.down;
-                                    }
-                                    break;
-                                case directions.left:
-                                    
-                                    if (r == 0)
-                                    {
-                                        enemy.direction = Movable.directions.up;
-                                    }
-                                    else
-                                    {
-                                        enemy.direction = Movable.directions.down;
-                                    }
-                                    break;
-                                case directions.up:
-                                    
-                                    if (r == 0)
-                                    {
-                                        enemy.direction = Movable.directions.left;
-                                    }
-                                    else
-                                    {
-                                        enemy.direction = Movable.directions.right;
-                                    }
-                                    break;
-                                case directions.down:
-                                   
-                                    if (r == 0)
-                                    {
-                                        enemy.direction = Movable.directions.left;
-                                    }
-                                    else
-                                    {
-                                        enemy.direction = Movable.directions.right;
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-
-
-                }
-
-                CheckEnemyBounds(enemies[i]);
-
-                if (BoxCollides(player.position_x, player.position_y, objSize, enemies[i].position_x, enemies[i].position_y, objSize))
-                {
-                    GameOver();
-                }
-
-                for (int j = 0; j < bullets.Count; j++)
-                {
-                    
-
-                    if (BoxCollides(enemies[i].position_x, enemies[i].position_y, objSize, bullets[j].position_x, bullets[j].position_y, 5))
-                    {
-                        if (bullets[j].myOwner is Player)
-                        {
-                            Explosion explosion = new Explosion(enemies[i]);
-                            explosions.Add(explosion);
-
-                            enemies.Remove(enemies[i]);
-                            i--;
-                            score += 100;
-                            bullets.Remove(bullets[j]);
-                            j--;
-                            
-                            break;
-                        }
-                    }
-                }
-                for (int l = 0; l < lets.Count; l++)
-                {
-                    if (BoxCollides(enemies[i].position_x+2, enemies[i].position_y+2, objSize-3, lets[l].position_x, lets[l].position_y, objSize/2))
-                    {
-                        switch (enemies[i].direction)
-                        {
-                            case directions.right:
-                                enemies[i].direction = directions.left;
-                                break;
-                            case directions.left:
-                                enemies[i].direction = directions.right;
-                                break;
-                            case directions.up:
-                                enemies[i].direction = directions.down;
-                                break;
-                            case directions.down:
-                                enemies[i].direction = directions.up;
-                                break;
-                        }
-                        break;
-                    }
-                }
-            }
+            CheckEnemiesCollisions();
+            
 
             if (enemies.Count == 0)
             {
                 GameOver();
             }
 
-            for (int b = 0; b < bullets.Count; b++)
-            {
-                if (CheckBulletBounds(bullets[b]))
-                {
-                    b--;
-                    break;
-                }
+            CheckBulletCollisions();
 
-                if (BoxCollides(player.position_x, player.position_y, objSize, bullets[b].position_x, bullets[b].position_y, 5))
-                {
-                    if (!(bullets[b].myOwner is Player))
-                    {
-                        GameOver();
-                        break;
-                    }
-                }
-
-                bool crash = false;
-                for (int l = 0; l < lets.Count; l++)
-                {
-                    if (BoxCollides(bullets[b].position_x, bullets[b].position_y, 5, lets[l].position_x, lets[l].position_y, objSize / 2))
-                    {
-                        if (lets[l].type != 2)
-                        {
-                            if (lets[l].type ==0)
-                            {
-                                crash = true;
-                                lets.Remove(lets[l]);
-                                l--;
-                                break;
-                            }
-                            crash = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (crash)
-                {
-
-                    bullets.Remove(bullets[b]);
-                    b--;
-                    break;
-                }
-            }
-
-            for (int k = 0; k < prizes.Count; k++)
-            {
-                if (BoxCollides(player.position_x, player.position_y, objSize, prizes[k].position_x, prizes[k].position_y, objSize))
-                {
-                    prizes.Remove(prizes[k]);
-                    score += 100;
-                    k--;
-                    prizeCount--;
-                }
-            }
+            CheckPrizeCollisions();
         }
 
         bool BoxCollides(int x1, int y1, int size1, int x2, int y2, int size2)
@@ -366,7 +340,7 @@ namespace Logic
         {
             for (int l = 0; l < lets.Count; l++)
             {
-                if (BoxCollides(player.position_x+2, player.position_y+2, objSize-3, lets[l].position_x, lets[l].position_y, objSize / 2))
+                if (BoxCollides(player.position_x + 2, player.position_y + 2, objSize - 3, lets[l].position_x, lets[l].position_y, objSize / 2))
                 {
                     switch (player.direction)
                     {
@@ -449,81 +423,196 @@ namespace Logic
             }
         }
 
-        void GameOver()
+        void CheckEnemiesCollisions()
         {
-            isGameOver = true;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                CheckEnemyToEnemy(i);
+
+                CheckEnemyBounds(enemies[i]);
+
+                if (BoxCollides(player.position_x, player.position_y, objSize, enemies[i].position_x, enemies[i].position_y, objSize))
+                {
+                    GameOver();
+                }
+
+                for (int l = 0; l < lets.Count; l++)
+                {
+                    if (BoxCollides(enemies[i].position_x + 2, enemies[i].position_y + 2, objSize - 3, lets[l].position_x, lets[l].position_y, objSize / 2))
+                    {
+                        switch (enemies[i].direction)
+                        {
+                            case directions.right:
+                                enemies[i].direction = directions.left;
+                                break;
+                            case directions.left:
+                                enemies[i].direction = directions.right;
+                                break;
+                            case directions.up:
+                                enemies[i].direction = directions.down;
+                                break;
+                            case directions.down:
+                                enemies[i].direction = directions.up;
+                                break;
+                        }
+                        break;
+                    }
+                }
+
+                for (int j = 0; j < bullets.Count; j++)
+                {
+                    if (BoxCollides(enemies[i].position_x, enemies[i].position_y, objSize, bullets[j].position_x, bullets[j].position_y, 5))
+                    {
+                        if (bullets[j].myOwner is Player)
+                        {
+                            Explosion explosion = new Explosion(enemies[i]);
+                            explosions.Add(explosion);
+
+                            enemies.Remove(enemies[i]);
+                            i--;
+                            score += 100;
+                            bullets.Remove(bullets[j]);
+                            j--;
+
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        void CheckBulletCollisions()
+        {
+            for (int b = 0; b < bullets.Count; b++)
+            {
+                if (CheckBulletBounds(bullets[b]))
+                {
+                    b--;
+                    break;
+                }
+                if (BoxCollides(player.position_x, player.position_y, objSize, bullets[b].position_x, bullets[b].position_y, 5))
+                {
+                    if (!(bullets[b].myOwner is Player))
+                    {
+                        GameOver();
+                        break;
+                    }
+                }
+                bool crash = false;
+                for (int l = 0; l < lets.Count; l++)
+                {
+                    if (BoxCollides(bullets[b].position_x, bullets[b].position_y, 5, lets[l].position_x, lets[l].position_y, objSize / 2))
+                    {
+                        if (lets[l].type != 2)
+                        {
+                            if (lets[l].type == 0)
+                            {
+                                crash = true;
+                                lets.Remove(lets[l]);
+                                l--;
+                                break;
+                            }
+                            crash = true;
+                            break;
+                        }
+                    }
+                }
+                if (crash)
+                {
+                    bullets.Remove(bullets[b]);
+                    b--;
+                    break;
+                }
+            }
+        }
+
+        void CheckPrizeCollisions()
+        {
+            for (int k = 0; k < prizes.Count; k++)
+            {
+                if (BoxCollides(player.position_x, player.position_y, objSize, prizes[k].position_x, prizes[k].position_y, objSize))
+                {
+                    prizes.Remove(prizes[k]);
+                    score += 100;
+                    k--;
+                    prizeCount--;
+                }
+            }
+        }
+
+        void CheckEnemyToEnemy(int i)
+        {
+            foreach (Enemy enemy in enemies)
+            {
+                if (!(enemies[i] == enemy))
+                {
+                    if (BoxCollides(enemies[i].position_x, enemies[i].position_y, objSize, enemy.position_x, enemy.position_y, objSize))
+                    {
+                        int r = positionRand.Next(2);
+                        switch (enemies[i].direction)
+                        {
+                            case directions.right:
+
+                                if (r == 0)
+                                {
+                                    enemy.direction = Movable.directions.up;
+                                }
+                                else
+                                {
+                                    enemy.direction = Movable.directions.down;
+                                }
+                                break;
+                            case directions.left:
+
+                                if (r == 0)
+                                {
+                                    enemy.direction = Movable.directions.up;
+                                }
+                                else
+                                {
+                                    enemy.direction = Movable.directions.down;
+                                }
+                                break;
+                            case directions.up:
+
+                                if (r == 0)
+                                {
+                                    enemy.direction = Movable.directions.left;
+                                }
+                                else
+                                {
+                                    enemy.direction = Movable.directions.right;
+                                }
+                                break;
+                            case directions.down:
+
+                                if (r == 0)
+                                {
+                                    enemy.direction = Movable.directions.left;
+                                }
+                                else
+                                {
+                                    enemy.direction = Movable.directions.right;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+
+            }
         }
 
         public void Update()
         {
             CheckCollisions();
 
-            if (player.direction != Movable.directions.none)
-                player.Move();
-            foreach (Enemy enemy in enemies)
-            {
-                
-                if (enemy.time == 40)
-                {
-                    enemy.time = 0;
-                    Shoot(enemy, enemy.direction);
+            MoveAfterCheck();
 
-                    int probability = positionRand.Next(10);
-                    switch (probability)
-                    {
-                        case 1:
-                            enemy.direction = directions.up;
-                            break;
-                        case 2:
-                            enemy.direction = directions.down;
-                            break;
-                        case 3:
-                            enemy.direction = directions.left;
-                            break;
-                        case 4:
-                            enemy.direction = directions.right;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                enemy.Move();
-                enemy.time++;
-            }
-            foreach (Bullet bullet in bullets)
-            {
-                bullet.Move();
-                bullet.Move();
-            }
-
-            for (int e = 0; e < explosions.Count; e++)
-            {
-                if (explosions[e].explocionCount < 60)
-                {
-                    explosions[e].explocionCount++;
-                    if (explosions[e].explocionCount % 10 == 0)
-                    {
-                        if (explosions[e].explocionCount != 40)
-                        {
-                            explosions[e].position_x -= 3;
-                            explosions[e].position_y -= 3;
-                            explosions[e].size += 3;
-                        }
-                        else
-                        {
-                            explosions[e].position_x -= 10;
-                            explosions[e].position_y -= 10;
-                            explosions[e].size += 10;
-                        }
-                    }
-                }
-                
-                else
-                {
-                    explosions.Remove(explosions[e]);
-                    e--;
-                }
-            }
+            MakeExplosions();
 
             MakePrizes(prizeCount);
         }
@@ -532,6 +621,21 @@ namespace Logic
         {
             Bullet bullet = new Bullet(tank, direction);
             bullets.Add(bullet);
+        }
+
+        void GameOver()
+        {
+            isGameOver = true;
+        }
+
+        public void NoneDirection()
+        {
+            player.direction = directions.none;
+        }
+
+        public void ChangePlayerDirection(directions dir)
+        {
+            player.direction = dir;
         }
     }
 }

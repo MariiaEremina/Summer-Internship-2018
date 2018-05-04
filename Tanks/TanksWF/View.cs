@@ -22,7 +22,7 @@ namespace TanksWF
         public List<Bitmap> letImages = new List<Bitmap>();
         public List<Bitmap> explosionImages = new List<Bitmap>();
         directions playerDirectionNumber = directions.up;
-        Model model = new Model();
+        Interlayer interlayer = new Interlayer();
         bool pause = true;
 
         public View()
@@ -36,13 +36,13 @@ namespace TanksWF
             MakeEnemyImages();
             MakeExplosionImages();
             MakeLetImages();
-            model.player.direction = directions.none;
+            interlayer.NoneDirection();
             Render();
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            model.Update();
+            interlayer.Update();
             Render();
         }
 
@@ -56,7 +56,7 @@ namespace TanksWF
 
             
 
-            if (!model.isGameOver)
+            if (!(interlayer.GameOver))
             {
                 RenderPlayer(screen);
                 RenderPrize(screen);
@@ -67,10 +67,16 @@ namespace TanksWF
             }
             else
             {
-                if(model.youWin)
+                if (interlayer.YouWin)
                 { }
                 else
-                { }
+                {
+                    Bitmap end = new Bitmap(sprite.Clone(new Rectangle(288, 184, 32, 16), sprite.PixelFormat));
+                    using (Graphics g = Graphics.FromImage(screen))
+                    {
+                        g.DrawImage(end, new Rectangle(100, 100, 200, 100));
+                    }
+                }
             }
 
 
@@ -81,34 +87,34 @@ namespace TanksWF
             }
             pictureBox1.Image = background;
 
-            Score.Text = "Score:" + model.score.ToString();
+            Score.Text = "Score:" + interlayer.Score.ToString();
         }
 
         public void RenderPlayer(Bitmap screen)
         {
             using (Graphics g = Graphics.FromImage(screen))
             {
-                switch (model.player.direction)
+                switch (interlayer.GetPlayerDirection)
                 {
                     case directions.up:
-                        g.DrawImage(playerImages[0], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        g.DrawImage(playerImages[0], new Rectangle(interlayer.GetPlayersX, interlayer.GetPlayersY, interlayer.ObjSize, interlayer.ObjSize));
                         playerDirectionNumber = directions.up;
                         break;
                     case directions.down:
-                        g.DrawImage(playerImages[1], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        g.DrawImage(playerImages[1], new Rectangle(interlayer.GetPlayersX, interlayer.GetPlayersY, interlayer.ObjSize, interlayer.ObjSize));
                         playerDirectionNumber = directions.down;
                         break;
                     case directions.left:
-                        g.DrawImage(playerImages[2], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        g.DrawImage(playerImages[2], new Rectangle(interlayer.GetPlayersX, interlayer.GetPlayersY, interlayer.ObjSize, interlayer.ObjSize));
                         playerDirectionNumber = directions.left;
                         break;
                     case directions.right:
-                        g.DrawImage(playerImages[3], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        g.DrawImage(playerImages[3], new Rectangle(interlayer.GetPlayersX, interlayer.GetPlayersY, interlayer.ObjSize, interlayer.ObjSize));
                         playerDirectionNumber = directions.right;
                         break;
                     case directions.none:
                         int i = (int)playerDirectionNumber;
-                        g.DrawImage(playerImages[i], new Rectangle(model.player.position_x, model.player.position_y, model.objSize, model.objSize));
+                        g.DrawImage(playerImages[i], new Rectangle(interlayer.GetPlayersX, interlayer.GetPlayersY, interlayer.ObjSize, interlayer.ObjSize));
                         break;
                     default:
                         break;
@@ -122,21 +128,21 @@ namespace TanksWF
         {
             using (Graphics g = Graphics.FromImage(screen))
             {
-                for (int i = 0; i < model.enemies.Count; i++)
+                for (int i = 0; i < interlayer.GetEnemiesCount; i++)
                 {
-                    switch (model.enemies[i].direction)
+                    switch (interlayer.GetEnemyDirection(i))
                     {
                         case directions.up:
-                            g.DrawImage(enemyImages[0], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
+                            g.DrawImage(enemyImages[0], new Rectangle(interlayer.GetEnemyX(i), interlayer.GetEnemyY(i), interlayer.ObjSize, interlayer.ObjSize));
                             break;
                         case directions.down:
-                            g.DrawImage(enemyImages[2], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
+                            g.DrawImage(enemyImages[2], new Rectangle(interlayer.GetEnemyX(i), interlayer.GetEnemyY(i), interlayer.ObjSize, interlayer.ObjSize));
                             break;
                         case directions.left:
-                            g.DrawImage(enemyImages[1], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
+                            g.DrawImage(enemyImages[1], new Rectangle(interlayer.GetEnemyX(i), interlayer.GetEnemyY(i), interlayer.ObjSize, interlayer.ObjSize));
                             break;
                         case directions.right:
-                            g.DrawImage(enemyImages[3], new Rectangle(model.enemies[i].position_x, model.enemies[i].position_y, model.objSize, model.objSize));
+                            g.DrawImage(enemyImages[3], new Rectangle(interlayer.GetEnemyX(i), interlayer.GetEnemyY(i), interlayer.ObjSize, interlayer.ObjSize));
                             break;
                         default:
                             break;
@@ -150,11 +156,11 @@ namespace TanksWF
         public void RenderPrize(Bitmap screen)
         {
             Bitmap prize = new Bitmap(sprite.Clone(new Rectangle(303, 95, 17, 17), sprite.PixelFormat));
-            for (int i = 0; i < model.prizes.Count; i++)
+            for (int i = 0; i < interlayer.GetPrizesCount; i++)
             {
                 using (Graphics g = Graphics.FromImage(screen))
                 {
-                    g.DrawImage(prize, new Rectangle(model.prizes[i].position_x, model.prizes[i].position_y, model.objSize, model.objSize));
+                    g.DrawImage(prize, new Rectangle(interlayer.GetPrizeX(i), interlayer.GetPrizeY(i), interlayer.ObjSize, interlayer.ObjSize));
                 }
             }
         }
@@ -162,11 +168,11 @@ namespace TanksWF
         public void RenderBullet(Bitmap screen)
         {
             Bitmap bullet = new Bitmap(sprite.Clone(new Rectangle(390, 0, 5, 5), sprite.PixelFormat));
-            for (int i = 0; i < model.bullets.Count; i++)
+            for (int i = 0; i < interlayer.GetBulletsCount; i++)
             {
                 using (Graphics g = Graphics.FromImage(screen))
                 {
-                    g.DrawImage(bullet, new Rectangle(model.bullets[i].position_x, model.bullets[i].position_y, 5, 5));
+                    g.DrawImage(bullet, new Rectangle(interlayer.GetBulletX(i), interlayer.GetBulletY(i), 5, 5));
                 }
             }
         }
@@ -175,24 +181,24 @@ namespace TanksWF
         {
             using (Graphics g = Graphics.FromImage(screen))
             {
-                for (int i = 0; i < model.explosions.Count; i++)
+                for (int i = 0; i < interlayer.GetExplosionsCount; i++)
                 {
-                    switch (Math.Round((double)(model.explosions[i].explocionCount/10)))
+                    switch (Math.Round((double)(interlayer.GetExplosionCount(i)/10)))
                     {
                         case 1:
-                            g.DrawImage(explosionImages[0], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            g.DrawImage(explosionImages[0], new Rectangle(interlayer.GetExplosionX(i), interlayer.GetExplosionY(i), interlayer.GetExplosionSize(i), interlayer.GetExplosionSize(i)));
                             break;
                         case 2:
-                            g.DrawImage(explosionImages[1], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            g.DrawImage(explosionImages[1], new Rectangle(interlayer.GetExplosionX(i), interlayer.GetExplosionY(i), interlayer.GetExplosionSize(i), interlayer.GetExplosionSize(i)));
                             break;
                         case 3:
-                            g.DrawImage(explosionImages[2], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            g.DrawImage(explosionImages[2], new Rectangle(interlayer.GetExplosionX(i), interlayer.GetExplosionY(i), interlayer.GetExplosionSize(i), interlayer.GetExplosionSize(i)));
                             break;
                         case 4:
-                            g.DrawImage(explosionImages[3], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            g.DrawImage(explosionImages[3], new Rectangle(interlayer.GetExplosionX(i), interlayer.GetExplosionY(i), interlayer.GetExplosionSize(i), interlayer.GetExplosionSize(i)));
                             break;
                         case 5:
-                            g.DrawImage(explosionImages[4], new Rectangle(model.explosions[i].position_x, model.explosions[i].position_y, model.explosions[i].size, model.explosions[i].size));
+                            g.DrawImage(explosionImages[4], new Rectangle(interlayer.GetExplosionX(i), interlayer.GetExplosionY(i), interlayer.GetExplosionSize(i), interlayer.GetExplosionSize(i)));
                             break;
                         default:
                             break;
@@ -203,11 +209,11 @@ namespace TanksWF
 
         public void RenderLets(Bitmap screen)
         {
-            for (int i = 0; i < model.lets.Count; i++)
+            for (int i = 0; i < interlayer.GetLetsCount; i++)
             {
                 using (Graphics g = Graphics.FromImage(screen))
                 {
-                    g.DrawImage(letImages[model.lets[i].type], new Rectangle(model.lets[i].position_x, model.lets[i].position_y, model.objSize / 2, model.objSize / 2));
+                    g.DrawImage(letImages[interlayer.GetLetType(i)], new Rectangle(interlayer.GetLetX(i), interlayer.GetLetY(i), interlayer.ObjSize / 2, interlayer.ObjSize / 2));
 
                 }
             }
@@ -266,19 +272,19 @@ namespace TanksWF
             switch (e.KeyData)
             {
                 case Keys.S:
-                    model.player.direction = directions.down;
+                    interlayer.ChangePlayerDirection(directions.down);
                     break;
                 case Keys.W:
-                    model.player.direction = directions.up;
+                    interlayer.ChangePlayerDirection(directions.up);
                     break;
                 case Keys.A:
-                    model.player.direction = directions.left;
+                    interlayer.ChangePlayerDirection(directions.left);
                     break;
                 case Keys.D:
-                    model.player.direction = directions.right;
+                    interlayer.ChangePlayerDirection(directions.right);
                     break;
                 case Keys.Space:
-                    model.Shoot(model.player, playerDirectionNumber);
+                    interlayer.Shoot(playerDirectionNumber);
                     break;
             }
         }
@@ -288,27 +294,27 @@ namespace TanksWF
             switch (e.KeyData)
             {
                 case Keys.S:
-                    if (model.player.direction == directions.down)
+                    if (interlayer.GetPlayerDirection == directions.down)
                     {
-                        model.player.direction = directions.none;
+                        interlayer.NoneDirection();
                     }
                     break;
                 case Keys.W:
-                    if (model.player.direction == directions.up)
+                    if (interlayer.GetPlayerDirection == directions.up)
                     {
-                        model.player.direction = directions.none;
+                        interlayer.NoneDirection();
                     }
                     break;
                 case Keys.A:
-                    if (model.player.direction == directions.left)
+                    if (interlayer.GetPlayerDirection == directions.left)
                     {
-                        model.player.direction = directions.none;
+                        interlayer.NoneDirection();
                     }
                     break;
                 case Keys.D:
-                    if (model.player.direction == directions.right)
+                    if (interlayer.GetPlayerDirection == directions.right)
                     {
-                        model.player.direction = directions.none;
+                        interlayer.NoneDirection();
                     }
                     break;
 
@@ -319,8 +325,8 @@ namespace TanksWF
         {
             Start.Focus();
             Start.Select();
-            model = new Model();
-            model.player.direction = directions.none;
+            interlayer.New();
+            interlayer.NoneDirection();
             timer.Start();
             pictureBox1.Focus();
         }
