@@ -19,6 +19,7 @@ namespace TanksWF
         public Bitmap background = new Bitmap(600, 600);
         public List<Bitmap> playerImages = new List<Bitmap>();
         public List<Bitmap> enemyImages = new List<Bitmap>();
+        public List<Bitmap> letImages = new List<Bitmap>();
         public List<Bitmap> explosionImages = new List<Bitmap>();
         directions playerDirectionNumber = directions.up;
         Model model = new Model();
@@ -31,6 +32,10 @@ namespace TanksWF
 
         private void View_Load(object sender, EventArgs e)
         {
+            MakePlayerImages();
+            MakeEnemyImages();
+            MakeExplosionImages();
+            MakeLetImages();
             model.player.direction = ClassLibrary.Movable.directions.none;
             Render();
         }
@@ -49,9 +54,7 @@ namespace TanksWF
                 g.Clear(Color.Transparent);
             }
 
-            MakePlayerImages();
-            MakeEnemyImages();
-            MakeExplosionImages();
+            
 
             if (!model.isGameOver)
             {
@@ -60,6 +63,7 @@ namespace TanksWF
                 RenderEnemy(screen);
                 RenderBullet(screen);
                 RenderExplosion(screen);
+                RenderLets(screen);
             }
 
 
@@ -190,6 +194,18 @@ namespace TanksWF
             }
         }
 
+        public void RenderLets(Bitmap screen)
+        {
+            for (int i = 0; i < model.lets.Count; i++)
+            {
+                using (Graphics g = Graphics.FromImage(screen))
+                {
+                    g.DrawImage(letImages[model.lets[i].type], new Rectangle(model.lets[i].position_x, model.lets[i].position_y, model.objSize / 2, model.objSize / 2));
+
+                }
+            }
+        }
+
         public void MakeExplosionImages()
         {
             Bitmap first = new Bitmap(sprite.Clone(new Rectangle(259, 130, 12, 11), sprite.PixelFormat));
@@ -202,6 +218,16 @@ namespace TanksWF
             explosionImages.Add(fourth);
             Bitmap fifth = new Bitmap(sprite.Clone(new Rectangle(335, 129, 33, 33), sprite.PixelFormat));
             explosionImages.Add(fifth);
+        }
+
+        public void MakeLetImages()
+        {
+            Bitmap first = new Bitmap(sprite.Clone(new Rectangle(280, 0, 8, 8), sprite.PixelFormat));
+            letImages.Add(first);
+            Bitmap second = new Bitmap(sprite.Clone(new Rectangle(280, 16, 8, 8), sprite.PixelFormat));
+            letImages.Add(second);
+            Bitmap third = new Bitmap(sprite.Clone(new Rectangle(264, 32, 8, 8), sprite.PixelFormat));
+            letImages.Add(third);
         }
 
         public void MakePlayerImages()

@@ -19,7 +19,7 @@ namespace Logic
         public List<Explosion> explosions = new List<Explosion>();
         public List<Prize> prizes = new List<Prize>();
         int prizeCount = 0;
-        List<Let> lets = new List<Let>();
+        public List<Let> lets = new List<Let>();
         public List<Bullet> bullets = new List<Bullet>();
         public int objSize = 40;
 
@@ -38,9 +38,10 @@ namespace Logic
             enemies.Add(enemy3);
 
             MakePrizes(prizeCount);
+            MakeLets();
 
         }
-        public void MakePrizes(int count)
+        void MakePrizes(int count)
         {
             for (int i = count; i < 10; i++)
             {
@@ -59,7 +60,41 @@ namespace Logic
             }
         }
 
-        public bool CheckEmpty(int x, int y)
+        void MakeLets()
+        {
+            string line;
+            List<string> lines = new List<string>();
+            int p_x = 0;
+            int p_y = 0;
+
+            System.IO.StreamReader file =
+            new System.IO.StreamReader(@"Images\1.txt");
+            while ((line = file.ReadLine()) != null)
+            {
+                lines.Add(line);
+            }
+
+            file.Close();
+
+            for (int i = 0; i<30; i++)
+            {
+                char[] tempArr = lines[i].ToCharArray();
+
+                for (int j = 0; j < 30; j++)
+                {
+                    if (tempArr[j] != '0')
+                    {
+                        Let let = new Let(p_x, p_y, tempArr[j]);
+                        lets.Add(let);
+                    }
+                    p_x += 20;
+                }
+                p_y += 20;
+                p_x = 0;
+            }
+        }
+
+        bool CheckEmpty(int x, int y)
         {
             bool empty = true;
 
@@ -89,7 +124,7 @@ namespace Logic
             return empty;
         }
 
-        public void checkCollisions()
+        public void CheckCollisions()
         {
             CheckPlayerBounds();
 
@@ -226,7 +261,7 @@ namespace Logic
             }
         }
 
-        public bool BoxCollides(int x1, int y1, int size1, int x2, int y2, int size2)
+        bool BoxCollides(int x1, int y1, int size1, int x2, int y2, int size2)
         {
             bool collide = false;
             if (x1 <= x2 + size2 && x1 + size1 >= x2 &&
@@ -237,7 +272,7 @@ namespace Logic
             return collide;
         }
 
-        public bool CheckBulletBounds(Bullet bullet)
+        bool CheckBulletBounds(Bullet bullet)
         {
             bool remove = false;
             if (bullet.position_x < 0 || bullet.position_x > width - 5 ||
@@ -249,7 +284,7 @@ namespace Logic
             return remove;
         }
 
-        public void CheckPlayerBounds()
+        void CheckPlayerBounds()
         {
             if (player.position_x < 0)
             {
@@ -270,7 +305,7 @@ namespace Logic
             }
         }
 
-        public void CheckEnemyBounds(Enemy enemy)
+        void CheckEnemyBounds(Enemy enemy)
         {
             if (enemy.position_x < 0)
             {
@@ -330,14 +365,14 @@ namespace Logic
             }
         }
 
-        public void GameOver()
+        void GameOver()
         {
             isGameOver = true;
         }
 
         public void Update()
         {
-            checkCollisions();
+            CheckCollisions();
 
             if (player.direction != Movable.directions.none)
                 player.Move();
