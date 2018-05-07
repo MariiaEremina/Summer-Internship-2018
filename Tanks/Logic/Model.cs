@@ -14,7 +14,7 @@ namespace Logic
         static Random positionRand = new Random();
         private int width = 600;
         private int height = 600;
-        private int prizeCount = 0;
+        public int prizeCount = 0;
         private Player player;
         private List<Enemy> enemies = new List<Enemy>();
         private List<Explosion> explosions = new List<Explosion>();
@@ -110,7 +110,7 @@ namespace Logic
             MakePrizes(prizeCount);
         }
 
-        void MakePrizes(int count)
+        public void MakePrizes(int count)
         {
             for (int i = count; i < 10; i++)
             {
@@ -163,7 +163,7 @@ namespace Logic
             }
         }
 
-        void MakeExplosions()
+        public void MakeExplosions()
         {
             for (int e = 0; e < explosions.Count; e++)
             {
@@ -195,7 +195,7 @@ namespace Logic
             }
         }
 
-        void MoveAfterCheck()
+        public void MoveAfterCheck()
         {
             if (player.direction != Movable.directions.none)
                 player.Move();
@@ -606,16 +606,7 @@ namespace Logic
             }
         }
 
-        public void Update()
-        {
-            CheckCollisions();
-
-            MoveAfterCheck();
-
-            MakeExplosions();
-
-            MakePrizes(prizeCount);
-        }
+        
 
         public void Shoot(Tank tank, directions direction)
         {

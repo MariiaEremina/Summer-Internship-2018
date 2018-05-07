@@ -2,7 +2,7 @@
 
 namespace TanksWF
 {
-    partial class View
+    partial class GameView
     {
         /// <summary>
         /// Обязательная переменная конструктора.

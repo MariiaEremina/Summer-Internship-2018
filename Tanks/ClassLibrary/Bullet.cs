@@ -8,14 +8,10 @@ namespace ClassLibrary
 {
     public class Bullet : Movable
     {
-        private int size_x;
-        private int size_y;
         public Tank myOwner;
 
         public Bullet(Tank myTank, directions tankDirection)
         {
-            size_x = 5;
-            size_y = 5;
             direction = tankDirection;
             myOwner = myTank;
 

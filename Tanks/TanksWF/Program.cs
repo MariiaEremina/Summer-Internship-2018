@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Controllers;
+using Logic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TanksWF;
 
 namespace TanksWF
 {
@@ -16,9 +19,10 @@ namespace TanksWF
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new View());
+            GameView gameView = new GameView();
+            Model model = new Model();
+            PackmanController controller = new PackmanController(gameView, model);
+            gameView.ShowDialog();
         }
-
-
     }
 }
