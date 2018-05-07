@@ -35,7 +35,7 @@ namespace TanksWF
 
 
 
-        public Bitmap sprite = new Bitmap("Images/sprite.png");
+        public Bitmap sprite = new Bitmap("Images/sprite2.png");
         public Bitmap background = new Bitmap(600, 600);
         public List<Bitmap> playerImages = new List<Bitmap>();
         public List<Bitmap> enemyImages = new List<Bitmap>();
