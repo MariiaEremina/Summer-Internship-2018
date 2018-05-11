@@ -137,7 +137,7 @@ namespace Logic
             int p_y = 0;
 
             System.IO.StreamReader file =
-            new System.IO.StreamReader(@"Images\1.txt");
+            new System.IO.StreamReader(@"../../Images/1.txt");
             while ((line = file.ReadLine()) != null)
             {
                 lines.Add(line);
