@@ -87,6 +87,7 @@ var mannaEl = document.getElementById('manna');
 var playerSpeed = 200;
 var bulletSpeed = 500;
 var enemySpeed = 100;
+var enemynumber = 0;
 
 // Update game objects
 function update(dt) {
@@ -98,11 +99,13 @@ function update(dt) {
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
     if(Math.random() < 1 - Math.pow(.993, gameTime)) {
+        enemynumber++;
         enemies.push({
             pos: [canvas.width,
                   Math.random() * (canvas.height - 39)],
             sprite: new Sprite('img/sprites.png', [0, 78], [80, 39],
-                               6, [0, 1, 2, 3, 2, 1])
+                               6, [0, 1, 2, 3, 2, 1]),
+            number: enemynumber   
         });
     }
 
@@ -321,22 +324,43 @@ function checkCollisions() {
                 break;
             }
         }
+            // for(var k=0; k<megaliths.length; k++) {
+            //     var size3 = megaliths[k].sprite.size;
+            //     var pos3 = [megaliths[k].pos[0],megaliths[k].pos[1]];
+            //     if(boxCollides(pos, size, pos3, size3))
+            //     {
+            //         if (enemies[i].number%2) 
+            //         {   
+            //             pos[1] = pos[1]+15; 
+            //         }
+            //         else
+            //         {
+            //             pos[1] = pos[1]-15; 
+            //         }
+            //     }
+                
+            // }
+
             for(var k=0; k<megaliths.length; k++) {
-                var pos3 = megaliths[k].pos;
                 var size3 = megaliths[k].sprite.size;
+                for (var s=0; s<60; s+=10)
+                {
+                var pos3 = [megaliths[k].pos[0]+s,megaliths[k].pos[1]];
                 if(boxCollides(pos, size, pos3, size3))
                 {
-                    if (i%2) 
+                    if (enemies[i].number%2) 
                     {   
-                        pos[1] = pos[1]+40; 
+                        pos[1] = pos[1]+5; 
                     }
                     else
                     {
-                        pos[1] = pos[1]-40; 
+                        pos[1] = pos[1]-5; 
                     }
                 }
+            }
                 
             }
+
         if(boxCollides(pos, size, player.pos, player.sprite.size)) {
             gameOver();
         }
