@@ -59,8 +59,7 @@ var player = {
 var bullets = [];
 var enemies = [];
 var explosions = [];
-var mannadrops = [];
-var mannaCount = 0;
+
 var megaliths = [];
 
 for (var i = 0; i < 9; i++)
@@ -70,6 +69,9 @@ for (var i = 0; i < 9; i++)
     sprite: new Sprite('img/sprites.png', [3, 208], [54, 54])
     });
 };
+
+var mannadrops = [];
+var mannaCount = 0;
 
 var lastFire = Date.now();
 var gameTime = 0;
@@ -104,14 +106,31 @@ function update(dt) {
         });
     }
 
-    if(mannaCount<=10) {
+    if(mannaCount<10) {
+        var manna_x = Math.random() * (canvas.width - 39);
+        var manna_y = Math.random() * (canvas.height - 39);
+        pos1 = [manna_x, manna_y];
+        size1 = [57, 45];
+        var making = true;
+        for(var k=0; k<megaliths.length; k++) {
+            var pos = megaliths[k].pos;
+            var size = megaliths[k].sprite.size;
+            if(boxCollides(pos, size, pos1, size1))
+            {
+                making = false;
+            }
+        }
+
+        if (making)
+        {
         mannadrops.push({
-            pos: [Math.random() * (canvas.width - 39),
-                  Math.random() * (canvas.height - 39)],
+            pos: [manna_x,
+                  manna_y],
             sprite: new Sprite('img/sprites.png', [0, 160], [57, 45],
                                6, [0, 1, 2, 3, 0])
         });
         mannaCount++;
+    }
     }
 
     checkCollisions();
@@ -404,6 +423,7 @@ function reset() {
 
     enemies = [];
     bullets = [];
+    mannadrops = [];
 
     player.pos = [50, canvas.height / 2];
 
