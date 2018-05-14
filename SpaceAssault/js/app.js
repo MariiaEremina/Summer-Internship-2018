@@ -53,7 +53,7 @@ resources.onReady(init);
 // Game state
 var player = {
     pos: [0, 0],
-    sprite: new Sprite('img/sprites.png', [0, 0], [39, 39], 16, [0, 1])
+    sprite: new Sprite('img/sprites.png', [1, 6], [37, 22], 16, [0, 1])
 };
 
 var bullets = [];
@@ -144,7 +144,7 @@ function handleInput(dt) {
     if(input.isDown('DOWN') || input.isDown('s')) {     
         
         if (!(megaliths.some(elem => (player.pos[1]+player.sprite.size[1]) >= (elem.pos[1]) && 
-            player.pos[1] < (elem.pos[1]+elem.sprite.size[1])
+            player.pos[1] < ((elem.pos[1]+elem.sprite.size[1]-2))
         && (player.pos[0]+player.sprite.size[0]) > (elem.pos[0]+5) && 
         player.pos[0] < (elem.pos[0]+elem.sprite.size[0]-5))))
         {
@@ -155,7 +155,7 @@ function handleInput(dt) {
     if(input.isDown('UP') || input.isDown('w')) {
 
         if (!(megaliths.some(elem => player.pos[1] <= (elem.pos[1]+elem.sprite.size[1]) && 
-        (player.pos[1]) > (elem.pos[1])
+        (player.pos[1]) > ((elem.pos[1])+2)
         && (player.pos[0]+player.sprite.size[0]) > (elem.pos[0]+5) && 
         player.pos[0] < (elem.pos[0]+elem.sprite.size[0]-5))))
         {
@@ -166,7 +166,7 @@ function handleInput(dt) {
     if(input.isDown('LEFT') || input.isDown('a')) {
 
         if (!(megaliths.some(elem => player.pos[0] <= (elem.pos[0]+elem.sprite.size[0]) && 
-        (player.pos[0]) > (elem.pos[0])
+        (player.pos[0]) > ((elem.pos[0])+2)
         && (player.pos[1]+player.sprite.size[1]) > (elem.pos[1]+5) && 
         player.pos[1] < (elem.pos[1]+elem.sprite.size[1]-5))))
         {
@@ -177,7 +177,7 @@ function handleInput(dt) {
     if(input.isDown('RIGHT') || input.isDown('d')) {
 
         if (!(megaliths.some(elem => (player.pos[0]+player.sprite.size[0]) >= (elem.pos[0]) && 
-        player.pos[0] < (elem.pos[0]+elem.sprite.size[0])
+        player.pos[0] < ((elem.pos[0]+elem.sprite.size[0])-2)
         && (player.pos[1]+player.sprite.size[1]) > (elem.pos[1]+5) && 
         player.pos[1] < (elem.pos[1]+elem.sprite.size[1]-5))))
         {
